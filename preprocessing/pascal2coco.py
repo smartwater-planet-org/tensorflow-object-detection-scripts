@@ -8,6 +8,13 @@ from tqdm import tqdm
 import re
 
 
+def number_generator():
+    i = 0
+    while True:
+        yield i
+        i += 1
+
+
 def get_label2id(labels_path: str) -> Dict[str, int]:
     """id is 1 start"""
     with open(labels_path, 'r') as f:
@@ -36,7 +43,7 @@ def get_image_info(annotation_root, extract_num_from_imgid=True):
     else:
         filename = os.path.basename(path)
     img_name = os.path.basename(filename)
-    img_id = os.path.splitext(img_name)[0]
+    img_id = number_generator()  # os.path.splitext(img_name)[0]
     if extract_num_from_imgid and isinstance(img_id, str):
         img_id = int(re.findall(r'\d+', img_id)[0])
 
@@ -96,6 +103,7 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
         img_info = get_image_info(annotation_root=ann_root,
                                   extract_num_from_imgid=extract_num_from_imgid)
         img_id = img_info['id']
+        output_json_dict['images'].append(img_info)
 
         start = bnd_id
         for obj in ann_root.findall('object'):
@@ -103,11 +111,6 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
             ann.update({'image_id': img_id, 'id': bnd_id})
             output_json_dict['annotations'].append(ann)
             bnd_id = bnd_id + 1
-
-        if bnd_id != start:
-            output_json_dict['images'].append(img_info)
-        else:
-            print(f"Warning: {a_path} has no object !")
 
     for label, label_id in label2id.items():
         category_info = {'supercategory': 'none',
