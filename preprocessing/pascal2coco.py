@@ -96,13 +96,18 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
         img_info = get_image_info(annotation_root=ann_root,
                                   extract_num_from_imgid=extract_num_from_imgid)
         img_id = img_info['id']
-        output_json_dict['images'].append(img_info)
 
+        start = bnd_id
         for obj in ann_root.findall('object'):
             ann = get_coco_annotation_from_obj(obj=obj, label2id=label2id)
             ann.update({'image_id': img_id, 'id': bnd_id})
             output_json_dict['annotations'].append(ann)
             bnd_id = bnd_id + 1
+
+        if bnd_id != start:
+            output_json_dict['images'].append(img_info)
+        else:
+            print(f"Warning: {a_path} has no object !")
 
     for label, label_id in label2id.items():
         category_info = {'supercategory': 'none',
