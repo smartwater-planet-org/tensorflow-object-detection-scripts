@@ -76,10 +76,6 @@ def get_coco_annotation_from_obj(obj, label2id):
     o_width = xmax - xmin
     o_height = ymax - ymin
 
-    if xmin + o_height > 1080 or ymin + o_width > 1920:
-        print(
-            f"Box size error !: (xmin, ymin, xmax, ymax): {xmin, ymin, xmax, ymax}")
-
     ann = {
         'area': o_width * o_height,
         'iscrowd': 0,
