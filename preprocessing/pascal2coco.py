@@ -15,6 +15,9 @@ def number_generator():
         i += 1
 
 
+__num_generator__ = number_generator()
+
+
 def get_label2id(labels_path: str) -> Dict[str, int]:
     """id is 1 start"""
     with open(labels_path, 'r') as f:
@@ -43,7 +46,7 @@ def get_image_info(annotation_root, extract_num_from_imgid=True):
     else:
         filename = os.path.basename(path)
     img_name = os.path.basename(filename)
-    img_id = number_generator()  # os.path.splitext(img_name)[0]
+    img_id = next(__num_generator__)  # os.path.splitext(img_name)[0]
     if extract_num_from_imgid and isinstance(img_id, str):
         img_id = int(re.findall(r'\d+', img_id)[0])
 
