@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import io
 
 import numpy as np
 import tensorflow as tf
 import os.path as path
-
-from PIL import Image
 
 parser = argparse.ArgumentParser(
     description="Inspect TFRecord file")
@@ -48,8 +45,6 @@ def main():
 
     all_classes = np.unique(all_classes)
     print(f'Classes ({len(all_classes)}): {all_classes}')
-
-
 
 
 if __name__ == '__main__':

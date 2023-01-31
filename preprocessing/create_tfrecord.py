@@ -34,10 +34,9 @@ parser.add_argument("-l",
                     required=True)
 
 
-
 def annotations_to_pandas(input_dir):
     annotation_files = [i for i in os.listdir(input_dir)
-        if re.search(r".+\.xml$", i)]
+                        if re.search(r".+\.xml$", i)]
 
     xml_list = []
     for xml_file in annotation_files:
@@ -61,7 +60,8 @@ def annotations_to_pandas(input_dir):
 
             xml_list.append(value)
 
-    column_name = ["filename", "width", "height", "class", "xmin", "ymin", "xmax", "ymax"]
+    column_name = ["filename", "width", "height",
+                   "class", "xmin", "ymin", "xmax", "ymax"]
     xml_df = pd.DataFrame(xml_list, columns=column_name)
 
     data = namedtuple("data", ["filename", "object"])
@@ -115,13 +115,13 @@ def create_tf_example(input_dir, example, label_map):
 
 def main():
     args = parser.parse_args()
-    
+
     writer = tf.io.TFRecordWriter(os.path.normpath(args.output_path))
 
     input_dir = os.path.normpath(args.input_dir)
     label_map_path = os.path.normpath(args.label_map)
     label_map = label_map_util.create_categories_from_labelmap(label_map_path)
-    label_map = { d["id"]: d["name"] for d in label_map }
+    label_map = {d["id"]: d["name"] for d in label_map}
 
     examples = annotations_to_pandas(input_dir)
 
@@ -132,6 +132,7 @@ def main():
     writer.close()
 
     print("Successfully created the TFRecord file: {}".format(args.output_path))
+
 
 if __name__ == "__main__":
     main()
