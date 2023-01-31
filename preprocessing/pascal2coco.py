@@ -63,7 +63,7 @@ def get_image_info(annotation_root, extract_num_from_imgid=True):
     return image_info
 
 
-def get_coco_annotation_from_obj(obj, label2id):
+def get_coco_annotation_from_obj(obj, label2id, img_info):
     label = obj.findtext('name')
     assert label in label2id, f"Error: {label} is not in label2id !"
     category_id = label2id[label]
@@ -75,6 +75,10 @@ def get_coco_annotation_from_obj(obj, label2id):
     assert xmax > xmin and ymax > ymin, f"Box size error !: (xmin, ymin, xmax, ymax): {xmin, ymin, xmax, ymax}"
     o_width = xmax - xmin
     o_height = ymax - ymin
+
+    if xmin + o_width > img_info["width"] or ymin + o_height > img_info["height"]:
+        print(
+            f"Box out of image !: (xmin, ymin, xmax, ymax): {xmin, ymin, xmax, ymax}, for image size: {img_info['width'], img_info['height']}")
 
     ann = {
         'area': o_width * o_height,
@@ -111,7 +115,8 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
 
         start = bnd_id
         for obj in ann_root.findall('object'):
-            ann = get_coco_annotation_from_obj(obj=obj, label2id=label2id)
+            ann = get_coco_annotation_from_obj(
+                obj=obj, label2id=label2id, img_info=img_info)
             ann.update({'image_id': img_id, 'id': bnd_id})
             output_json_dict['annotations'].append(ann)
             bnd_id = bnd_id + 1
